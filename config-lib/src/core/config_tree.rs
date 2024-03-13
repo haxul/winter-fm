@@ -10,7 +10,7 @@ pub struct ConfigTree {
 
 impl ConfigTree {
     pub fn new() -> Result<ConfigTree, String> {
-        let config = match config_reader::read() {
+        let config: Vec<String> = match config_reader::read() {
             Ok(conf) => conf,
             Err(err) => return Err(err.to_string())
         };
