@@ -53,18 +53,8 @@ impl ConfigTree {
         if val.is_empty() || key.is_empty() {
             return Err(format!("params are empty: val {}, key {}", val, key));
         }
-        let parts = key.split(".").collect::<Vec<&str>>();
-
-        self.add_parts(parts, val)
-    }
-
-    fn add_parts(&mut self, key_parts: Vec<&str>, val: String) -> Result<(), String> {
-        if key_parts.is_empty() {
-            return Ok(());
-        }
-
         let mut cur: &mut Box<Node> = &mut self.root;
-        for part in key_parts {
+        for part in key.split(".") {
             if !cur.children.contains_key(part) {
                 cur.children.insert(part.to_string(), Box::new(Node::new(part.to_string()).unwrap()));
             }
