@@ -44,7 +44,7 @@ impl ConfigTree {
                 return Err(format!("incorrect config line format: {:?})", kv));
             }
             let key: &str = *kv.first().expect("key must exist");
-            let val: &str = *kv.last().expect("val must exists");
+            let val: &str = *kv.last().expect("val must exist");
             tree.add(key.to_string(), val.to_string())?;
         }
 
@@ -61,7 +61,7 @@ impl ConfigTree {
                 cur.children.insert(part.to_string(), Node::new_empty());
             }
 
-            cur = cur.children.get_mut(part).unwrap();
+            cur = cur.children.get_mut(part).expect("must contain key");
         }
 
         cur.val = Some(val);
