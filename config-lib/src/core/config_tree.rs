@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::core::config_reader;
 
-const EMPTY_PARAMS: &str = "params is empty";
+const EMPTY_PARAMS: &'static str = "params is empty";
 
 pub struct ConfigTree {
     root: Box<Node>,
@@ -27,7 +27,11 @@ impl ConfigTree {
             cur = cur.children.get(part).expect("must contain key");
         }
 
-        Some(&cur.val)
+        if let Some(val) = &cur.val {
+            Some(&val)
+        } else {
+            None
+        }
     }
 
     pub fn new_config_vec(config: Vec<String>) -> Result<ConfigTree, String> {
@@ -56,32 +60,39 @@ impl ConfigTree {
         let mut cur: &mut Box<Node> = &mut self.root;
         for part in key.split(".") {
             if !cur.children.contains_key(part) {
-                cur.children.insert(part.to_string(), Box::new(Node::new(part.to_string()).unwrap()));
+                cur.children.insert(part.to_string(), Box::new(Node::new_empty()));
             }
 
             cur = cur.children.get_mut(part).unwrap();
         }
 
-        cur.val = val;
+        cur.val = Some(val);
         Ok(())
     }
 }
 
 struct Node {
-    val: String,
+    val: Option<String>,
     children: HashMap<String, Box<Node>>,
 }
 
 impl Node {
-    fn new(val: String) -> Result<Node, String> {
+    fn new(val: String) -> Result<Node, &'static str> {
         let trim: &str = val.trim();
         if trim.is_empty() {
-            return Err(EMPTY_PARAMS.to_string());
+            return Err(EMPTY_PARAMS);
         }
         let trim_val: String = if trim.len() == val.len() { val } else { trim.to_string() };
         Ok(Node {
-            val: trim_val,
+            val: Some(trim_val),
             children: HashMap::new(),
         })
+    }
+
+    fn new_empty() -> Node {
+        Node {
+            val: None,
+            children: HashMap::new(),
+        }
     }
 }
