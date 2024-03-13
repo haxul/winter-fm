@@ -35,10 +35,8 @@ impl ConfigTree {
     }
 
     pub fn new_config_vec(config: Vec<String>) -> Result<ConfigTree, String> {
-        let root = Node::new(String::from("$"))?;
-        let mut tree = ConfigTree {
-            root: Box::new(root)
-        };
+        let root: Box<Node> = Node::new_empty();
+        let mut tree = ConfigTree { root };
 
         for line in config {
             let kv: Vec<&str> = line.split("=").collect();
@@ -60,7 +58,7 @@ impl ConfigTree {
         let mut cur: &mut Box<Node> = &mut self.root;
         for part in key.split(".") {
             if !cur.children.contains_key(part) {
-                cur.children.insert(part.to_string(), Box::new(Node::new_empty()));
+                cur.children.insert(part.to_string(), Node::new_empty());
             }
 
             cur = cur.children.get_mut(part).unwrap();
@@ -77,22 +75,23 @@ struct Node {
 }
 
 impl Node {
-    fn new(val: String) -> Result<Node, &'static str> {
+    fn new(val: String) -> Result<Box<Node>, &'static str> {
         let trim: &str = val.trim();
         if trim.is_empty() {
             return Err(EMPTY_PARAMS);
         }
         let trim_val: String = if trim.len() == val.len() { val } else { trim.to_string() };
-        Ok(Node {
+        let node = Box::new(Node {
             val: Some(trim_val),
             children: HashMap::new(),
-        })
+        });
+        Ok(node)
     }
 
-    fn new_empty() -> Node {
-        Node {
+    fn new_empty() -> Box<Node> {
+        Box::new(Node {
             val: None,
             children: HashMap::new(),
-        }
+        })
     }
 }
