@@ -15,7 +15,7 @@ impl ConfigTree {
             Err(err) => return Err(err.to_string())
         };
 
-        Self::new_config_vec(config)
+        Self::new_from_config(config)
     }
 
     pub fn get(&self, key: &str) -> Option<&str> {
@@ -34,7 +34,7 @@ impl ConfigTree {
         }
     }
 
-    pub fn new_config_vec(config: Vec<String>) -> Result<ConfigTree, String> {
+    pub fn new_from_config(config: Vec<String>) -> Result<ConfigTree, String> {
         let root: Box<Node> = Node::new_empty();
         let mut tree = ConfigTree { root };
 
