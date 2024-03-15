@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::core::config_reader;
+use crate::utils::string_util;
 
 const EMPTY_PARAMS: &'static str = "params is empty";
 
@@ -45,7 +46,10 @@ impl ConfigTree {
             }
             let key: &str = *kv.first().expect("key must exist");
             let val: &str = *kv.last().expect("val must exist");
-            tree.add(key.to_string(), val.to_string())?;
+            if string_util::has_space_char(key) {
+                return Err(format!("key '{}' has whitespace char", key));
+            }
+            tree.add(String::from(key.trim()), String::from(val.trim()))?;
         }
 
         Ok(tree)
@@ -58,7 +62,7 @@ impl ConfigTree {
         let mut cur: &mut Box<Node> = &mut self.root;
         for part in key.split(".") {
             if !cur.children.contains_key(part) {
-                cur.children.insert(part.to_string(), Node::new_empty());
+                cur.children.insert(String::from(part), Node::new_empty());
             }
 
             cur = cur.children.get_mut(part).expect("must contain key");
@@ -80,7 +84,7 @@ impl Node {
         if trim.is_empty() {
             return Err(EMPTY_PARAMS);
         }
-        let trim_val: String = if trim.len() == val.len() { val } else { trim.to_string() };
+        let trim_val: String = if trim.len() == val.len() { val } else { String::from(trim) };
         let node = Box::new(Node {
             val: Some(trim_val),
             children: HashMap::new(),

@@ -1,20 +1,25 @@
+use crate::core::config_tree::ConfigTree;
+
 mod core;
+mod utils;
 
-#[cfg(test)]
-mod tests {
-    use crate::core::config_tree::ConfigTree;
 
-    #[test]
-    fn it_works() {
-        let mut tree;
-        match ConfigTree::new() {
-            Ok(tree_val) => tree = tree_val,
-            Err(msg) => panic!("{}", msg)
-        };
+pub struct Config {
+    tree: ConfigTree,
+}
 
-        let val = tree.get("hello.key1.key2").or_else(|| Some("empty")).unwrap();
-        let val2 = tree.get("hello.key1").or_else(|| Some("empty")).unwrap();
-        println!("{val}");
-        println!("{val2}");
+impl Config {
+    pub fn new() -> Result<Config, String> {
+        let tree = ConfigTree::new()?;
+        Ok(Config { tree })
+    }
+
+    pub fn new_from(vec: Vec<String>) -> Result<Config, String> {
+        let tree = ConfigTree::new_from_config(vec)?;
+        Ok(Config { tree })
+    }
+
+    pub fn get(&self, key: &str) -> Option<&str> {
+        self.tree.get(key)
     }
 }
