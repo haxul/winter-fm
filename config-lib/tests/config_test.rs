@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod config_tests {
     use config_lib::Config;
 
     #[test]
