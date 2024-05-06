@@ -1,6 +1,6 @@
 Environment config library for Rust <p>
 
-Default file with configs must be place in <i>recourse/application.properties</i> file<p>
+Default file with configs must be placed in <i>recourse/application.properties</i> file<p>
 
 Application.properties has format ```key=value```. <p>
 Example:
